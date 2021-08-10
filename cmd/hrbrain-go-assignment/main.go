@@ -1,18 +1,20 @@
 package main
 
 import (
-	"net/http"
+	"log"
+	"os"
 
-	"github.com/Jeffrey-Codebase/hrbrain-go-assignment/internal/services"
+	"github.com/Jeffrey-Codebase/hrbrain-go-assignment/config"
+	"github.com/Jeffrey-Codebase/hrbrain-go-assignment/internal/routes"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	githubService := services.GetGithubService()
-
-	router := gin.Default()
-	router.GET("/hello", func(c *gin.Context) {
-		c.String(http.StatusOK, githubService.SayHello())
-	})
-	router.Run("localhost:8080")
+	if os.Getenv("GITHUB_TOKEN") == "" {
+		log.Fatalln("Please store the github access token in env GITHUB_TOKEN")
+	}
+	config := config.GetConfig()
+	engine := gin.Default()
+	engine = routes.GetRepoRoute(engine)
+	engine.Run(":" + config.Port)
 }
