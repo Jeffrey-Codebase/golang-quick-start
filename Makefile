@@ -1,5 +1,5 @@
 run:
-	go run cmd/hrbrain-go-assignment/main.go
+	GIN_MODE=release go run cmd/hrbrain-go-assignment/main.go
 
 test:
 	go test ./internal/services/...

@@ -2,11 +2,13 @@ package routes
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/Jeffrey-Codebase/hrbrain-go-assignment/config"
+	customErrors "github.com/Jeffrey-Codebase/hrbrain-go-assignment/internal/errors"
 	"github.com/Jeffrey-Codebase/hrbrain-go-assignment/internal/services"
 	"github.com/gin-gonic/gin"
 	"github.com/google/go-github/github"
@@ -25,7 +27,12 @@ func GetRepoRoute(r *gin.Engine) *gin.Engine {
 		}
 		result, err := githubService.GetGithubRepo(user, repo)
 		if err != nil {
-			c.String(http.StatusInternalServerError, err.Error())
+			var rateLimitError *customErrors.RateLimitError
+			if errors.As(err, &rateLimitError) {
+				c.String(http.StatusTooManyRequests, err.Error())
+			} else {
+				c.String(http.StatusInternalServerError, err.Error())
+			}
 			return
 		}
 		c.JSON(http.StatusOK, result)
@@ -44,7 +51,8 @@ func getGithubService() *services.GithubService {
 	)
 	httpClient := &http.Client{
 		Transport: oauth2.NewClient(ctx, ts).Transport,
-		Timeout:   time.Duration(config.TimeoutMS) * time.Millisecond,
+		// set up timeout spec for the github client
+		Timeout: time.Duration(config.TimeoutMS) * time.Millisecond,
 	}
 
 	client := github.NewClient(httpClient)
