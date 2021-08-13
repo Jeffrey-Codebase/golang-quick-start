@@ -1,5 +1,5 @@
 # hrbrain-go-assignment
-### Completed Specifications
+### Completed specifications
 Give a GitHub user name and repository name as a request parameter\
 Return the number of stars in the repository and the list of followers of the user as a
 response\
@@ -44,4 +44,15 @@ make test
 or you can run the following go command under the project folder directly
 ```
 go test ./internal/services/...
+```
+
+#### Configuration
+You are able to change the following configurations in config/config.yaml file
+```
+#The service will be launched on this port
+port : 8080
+#The timeout spec for the API call in milliseconds
+timeoutMS : 1000
+#Retry failed API call until reaching this number
+maxAttempt : 3
 ```
