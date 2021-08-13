@@ -16,8 +16,8 @@ import (
 )
 
 type Response struct {
-	StarCount *int      `json:"star_count"`
-	Follower  []*string `json:"followers"`
+	StarCount int      `json:"star_count"`
+	Follower  []string `json:"followers"`
 }
 
 type GithubService struct {
@@ -62,15 +62,15 @@ func (gs *GithubService) GetGithubRepo(username string, reponame string) (*Respo
 		return nil, err
 	}
 
-	result := &Response{StarCount: starCount, Follower: follower}
+	result := &Response{StarCount: *starCount, Follower: follower}
 	return result, nil
 }
 
-func (gs *GithubService) getStargazers(ctx context.Context, username string, reponame string, starCount int) ([]*string, error) {
+func (gs *GithubService) getStargazers(ctx context.Context, username string, reponame string, starCount int) ([]string, error) {
 	channel := make(chan []*github.Stargazer)
 	defer close(channel)
 
-	var follower []*string
+	var follower []string
 	totalPages := int(math.Ceil(float64(starCount) / 100))
 	for page := 1; page <= totalPages; page++ {
 		// use goroutine to fetch data parallelly
@@ -82,7 +82,7 @@ func (gs *GithubService) getStargazers(ctx context.Context, username string, rep
 		if stargazers != nil {
 			success++
 			for _, stargazer := range stargazers {
-				follower = append(follower, stargazer.User.Login)
+				follower = append(follower, *stargazer.User.Login)
 			}
 		}
 	}
