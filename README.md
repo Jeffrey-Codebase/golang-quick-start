@@ -18,21 +18,30 @@ Write simple and readable code
 ### How to run
 
 #### Pre-tasks
-Clone the project from github\
-Store the github access token in environment variable GITHUB_TOKEN
+Store the github access token in environment variable GITHUB_TOKEN\
+Clone the project from github
 
-#### Run the unit test
-Run following command under project folder
-```
-make test
-```
 
 #### Run the service
-Run following command under project folder
+Run the following Makefile script command under the project folder
 ```
 make run
 ```
-Test the service by the command
+or you can run the following go command under the project folder directly
+```
+go run cmd/hrbrain-go-assignment/main.go
+```
+Validate the service by the command
 ```
 curl 'http://localhost:8080/repos?user=codecov&repo=example-go'
+```
+
+#### Run the test
+Run the following Makefile script command under the project folder
+```
+make test
+```
+or you can run the following go command under the project folder directly
+```
+go test ./internal/services/...
 ```
