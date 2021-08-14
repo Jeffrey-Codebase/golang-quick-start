@@ -52,7 +52,7 @@ You are able to change the following configurations in config/config.yaml file
 #The service will be launched on this port
 port : 8080
 #The timeout spec for the API call in milliseconds
-timeoutMS : 1000
+timeoutMS : 3000
 #Retry failed API call until reaching this number
 maxAttempt : 3
 ```

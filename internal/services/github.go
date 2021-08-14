@@ -102,7 +102,7 @@ func (gs *GithubService) getStargazersByPage(ctx context.Context, username strin
 	// retry for timeout error or 500 reture code
 	for attempt < maxAttempt && (os.IsTimeout(err) || resp.StatusCode == http.StatusInternalServerError) {
 		attempt++
-		log.Print("Get 500 Failed. Retry attempt ", attempt)
+		log.Print("Get Stargazers Failed. Retry attempt ", attempt)
 		stargazers, resp, err = gs.client.Activity.ListStargazers(ctx, username, reponame, &option)
 	}
 	if err != nil || resp.StatusCode != http.StatusOK {
@@ -120,7 +120,7 @@ func (gs *GithubService) getRepository(ctx context.Context, username string, rep
 	// retry for timeout error or 500 reture code
 	for attempt < maxAttempt && (os.IsTimeout(err) || resp.StatusCode == http.StatusInternalServerError) {
 		attempt++
-		log.Print("Get 500 Failed. Retry attempt ", attempt)
+		log.Print("Get Repository Failed. Retry attempt ", attempt)
 		repo, resp, err = gs.client.Repositories.Get(ctx, username, reponame)
 	}
 	return repo, resp, err
