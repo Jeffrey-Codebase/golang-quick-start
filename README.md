@@ -43,7 +43,7 @@ make test
 ```
 or you can run the following go command under the project folder directly
 ```
-go test ./internal/services/...
+go test -v ./internal/services/...
 ```
 
 #### Configuration
