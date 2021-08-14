@@ -44,8 +44,8 @@ func TestGetRepoWithBadRepo(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
-func TestGetRepoTimeout(t *testing.T) {
-	service := NewGithubService(getGithubClient(1))
+func TestGetRepoTimeoutAndRetry(t *testing.T) {
+	service := NewGithubService(getGithubClient(time.Microsecond))
 	_, err := service.GetGithubRepo(user, repo)
 	assert.NotNil(t, err)
 }
@@ -61,14 +61,15 @@ func TestGetRepoRateLimitError(t *testing.T) {
 }
 
 func getDefaultGithubClient() *github.Client {
-	return getGithubClient(0)
-}
-
-func getGithubClient(timeoutMS int) *github.Client {
-
 	if githubClient != nil {
 		return githubClient
 	}
+	githubClient = getGithubClient(0)
+	return githubClient
+}
+
+func getGithubClient(timeoutSpec time.Duration) *github.Client {
+
 	if os.Getenv("GITHUB_TOKEN") == "" {
 		log.Fatalln("Please store the github access token in env GITHUB_TOKEN")
 	}
@@ -77,14 +78,13 @@ func getGithubClient(timeoutMS int) *github.Client {
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},
 	)
-	if timeoutMS == 0 {
+	if timeoutSpec == 0 {
 		config := config.GetConfig()
-		timeoutMS = config.TimeoutMS
+		timeoutSpec = time.Duration(config.TimeoutMS) * time.Millisecond
 	}
 	httpClient := &http.Client{
 		Transport: oauth2.NewClient(ctx, ts).Transport,
-		Timeout:   time.Duration(timeoutMS) * time.Millisecond,
+		Timeout:   timeoutSpec,
 	}
-	githubClient = github.NewClient(httpClient)
-	return githubClient
+	return github.NewClient(httpClient)
 }
